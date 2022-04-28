@@ -1,0 +1,20 @@
+name: Run Node Commands
+description: Install node_module packages and run node commands
+inputs:
+  node_version:
+    required: true
+  cmd:
+    required: true
+  cache_key:
+    required: false
+    default: yarn
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v2
+      with:
+        node-version: ${{ inputs.node_version }}
+        cache: ${{ inputs.cache_key }}
+    - run: yarn install --production=false
+    - run: ${{ inputs.cmd }}
