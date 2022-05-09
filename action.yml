@@ -1,0 +1,34 @@
+name: Run Node/Yarn
+description: Install Node/Yarn packages on development environment and run commands.
+author: Manel Merino <mmerino@epages.com>, Roberto Welzel Filho <rwelzel@epages.com>, Unai Abrisketa <uabrisketa@epages.com>
+
+inputs:
+  node_version:
+    description: The node version to be used. Defaults to `18`.
+    required: true
+    default: '18'
+  cache_key:
+    description: The cache key to be checked. Can be one of `npm`, `yarn`. Defaults to `yarn`.
+    required: true
+    default: yarn
+  cmd:
+    description: The command to be executed.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node_version }}
+        cache: ${{ inputs.cache_key }}
+    - shell: bash
+      run: |
+        if [ "${{ inputs.cache_key }}" -eq 'npm' ]; then
+          npm install --production=false
+        else
+          yarn install --production=false
+        fi
+    - shell: bash
+      run: ${{ inputs.cmd }}
